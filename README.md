@@ -64,6 +64,10 @@ If you want add permissions / icons / app name or stuff like this, go to project
 "Build Android APK" submenu click "Create Templates". Now in Project File Tree in "Other Files -> 
 android -> AnroidManifest.xml" you can modify these options.
 
+This is how it works (adding items and storaging it):
+
+	![Adding to DataBase](https://github.com/raidgar98/KebabMobileApp/First.mp4)
+
 If you have some troubles, bugs or recommendations write it to me:
 
 	raidgar98@onet.pl
