@@ -66,7 +66,7 @@ android -> AnroidManifest.xml" you can modify these options.
 
 This is how it works (adding items and storaging it):
 
-	![Adding to DataBase](https://github.com/raidgar98/KebabMobileApp/First.mp4)
+	![Adding to DataBase](https://github.com/raidgar98/KebabMobileApp/First.gif?raw=true)
 
 If you have some troubles, bugs or recommendations write it to me:
 
