@@ -72,6 +72,8 @@ And this is how syncing works:
 
 ![Syncing](https://github.com/raidgar98/KebabMobileApp/blob/master/Second.gif?raw=true)
 
+And yes, it's so easy, just type address of serwer, where you want to send this files
+
 If you have some troubles, bugs or recommendations write it to me:
 
 	raidgar98@onet.pl
