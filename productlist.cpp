@@ -1,6 +1,12 @@
 #include "productlist.h"
 #include <QVariant>
 #include <QtSql/QSqlRecord>
+#include <list>
+
+struct simple
+{
+	QString arg1, arg2;
+};
 
 ProductList::ProductList(QSqlDatabase * srcDb, QObject *parent) : QObject(parent)
 {
@@ -10,7 +16,7 @@ ProductList::ProductList(QSqlDatabase * srcDb, QObject *parent) : QObject(parent
 	db->open();
 
 	QSqlQuery q("SELECT COUNT(*) FROM prices;");
-	QSqlQuery q1("SELECT * FROM prices WHERE idPrice=1;");
+	QSqlQuery q1("SELECT name, fullName FROM prices WHERE idPrice=1;");
 	q.exec();
 	q1.exec();
 
@@ -19,65 +25,48 @@ ProductList::ProductList(QSqlDatabase * srcDb, QObject *parent) : QObject(parent
 	q.next();
 	q1.next();
 
-	const quint16 count = static_cast<quint16>(q.value(0).toInt());
+	const int count = q.value(0).toInt();
 	quint16 row = 0;
 
 	const quint8 name = static_cast<quint8>(q1.record().indexOf("name"));
 	const quint8 fullName = static_cast<quint8>(q1.record().indexOf("fullName"));
 
-	bool flagEmpty = false;
+	std::list<simple> found;
 
-	while(row != count)
+	do
 	{
+
 		row++;
-		QString baseQuerry = "SELECT * FROM prices WHERE idPrice=::0 AND isExtra='false';";
-		baseQuerry = baseQuerry.replace("::0", QString::number(row));
+		QString querTemplate = "SELECT name, fullName FROM prices WHERE idPrice=::1 AND isExtra='false';";
+		querTemplate = querTemplate.replace("::1", QString::number(row));
 		db->open();
-		QSqlQuery q2(baseQuerry);
-		q2.exec();
+		QSqlQuery quer(querTemplate);
+		quer.exec();
 		db->close();
-		q2.next();
-		if(q2.value(0).isNull()) continue;
+		quer.next();
+		if(quer.isNull(0)) continue;
+		found.push_back({quer.value(name).toString(), quer.value(fullName).toString()});
 
-		QSqlQuery q3;
+	}while(row != count);
 
-		do
+
+	if(found.size() % 2 != 0)
+	{
+		for(auto var = found.begin(); var != found.end(); var++)
 		{
-			row++;
-			QString baseQuerry2 = "SELECT * FROM prices WHERE idPrice=::0 AND isExtra='false';";
-			baseQuerry2 = baseQuerry2.replace("::0", QString::number(row));
-			db->open();
-			q3.prepare(baseQuerry2);
-			q3.exec();
-			db->close();
-			q3.next();
-
-			if(row == count) break;
-
-		}while(q3.value(0).isNull());
-
-		if(q3.value(0).isNull())
-		{
-			for(auto var : mItems)
+			if(var->arg1 == "Temp")
 			{
-				if(var.SecondShort == "Temp")
-				{
-					var.SecondShort = q2.value(name).toString();
-					var.Second = q2.value(fullName).toString();
-					flagEmpty = false;
-					return;
-
-				}else flagEmpty = true;
+				found.erase(var);
+				break;
 			}
 		}
+	}
 
-		productListItem temp;
-		temp.First = q2.value(fullName).toString();
-		temp.FirstShort = q2.value(name).toString();
-		temp.Second = flagEmpty ? "ERROR" : q3.value(fullName).toString();
-		temp.SecondShort = flagEmpty ? "Temp" : q3.value(name).toString();
-
-		mItems.append(temp);
+	for(auto var = found.begin(); var != found.end(); var++)
+	{
+		auto temp = var;
+		var++;
+		mItems.append({temp->arg2, var->arg2, temp->arg1, var->arg1});
 	}
 
 	/*
