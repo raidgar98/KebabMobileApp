@@ -66,7 +66,13 @@ android -> AnroidManifest.xml" you can modify these options.
 
 This is how it works (adding items and storaging it):
 
-	![Adding to DataBase](https://github.com/raidgar98/KebabMobileApp/First.gif?raw=true)
+![Adding to DataBase](https://github.com/raidgar98/KebabMobileApp/blob/master/First.gif?raw=true)
+
+And this is how syncing works:
+
+![Syncing](https://github.com/raidgar98/KebabMobileApp/blob/master/Second.gif?raw=true)
+
+And yes, it's so easy, just type address of serwer, where you want to send this files
 
 If you have some troubles, bugs or recommendations write it to me:
 
