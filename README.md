@@ -9,12 +9,8 @@ Things To Do with Highest Priority:
 	- Add Missing comments
 
 	- Rename varriables and methodes names
-
-	- Remove Temporary Files after transfer is Complete
-
+	
 	- Add better storage managment
-
-	- Add dynamic products insertion
 
 	- Add request to allow read and write into storage 
 		(now user have to manually allow it in settings)
@@ -30,6 +26,7 @@ Things To Do with Standard Priority:
 
 	- Change storage directory (now it's user download folder)
 
+	- Add dynamic extras
 
 Things To Do with Lowest Priority:
 
@@ -43,7 +40,7 @@ I setup my Qt for android using this toutrial:
 When you setup your Qt now you can import all files to your new Project.
 
 On your mobile device you have to create sqlite database in your download directory: dataBase
-In this db, should be one table, which you can create with this querry:
+In this db, should be two tables, which you can create them with these querries:
 
 	CREATE TABLE orders 
 	(
@@ -58,7 +55,17 @@ In this db, should be one table, which you can create with this querry:
         takeAway tinyint(1),
         isComplete tinyint(1),
         orderDateTime datetime
-    );
+	);
+
+
+	CREATE TABLE prices 
+	(
+	idPrice INTEGER PRIMARY KEY AUTOINCREMENT,
+	name varchar,
+	val decimal,
+	fullName varchar,
+	isExtra boolean
+	);
 
 If you want add permissions / icons / app name or stuff like this, go to project options and in
 "Build Android APK" submenu click "Create Templates". Now in Project File Tree in "Other Files -> 
