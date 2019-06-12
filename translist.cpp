@@ -15,6 +15,7 @@ TransList::TransList(QObject *parent) : QObject(parent)
 QList<TransItem> TransList::items() const
 {
 	return mItems;
+	//XDD
 }
 
 bool TransList::setItemAt(int index, const TransItem &item)
