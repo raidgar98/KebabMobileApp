@@ -41,36 +41,21 @@ void TelnetAdapter::setBooleans(QString& src, quint8 & souce, bool & meat, bool 
 	takeaway = static_cast<bool>(q.front()); q.pop_front();
 }
 
-TelnetAdapter::TelnetAdapter(TransList *src, QObject *parent) : QObject (parent), list(src)
+TelnetAdapter::TelnetAdapter(QSqlDatabase* dbSrc, TransList *src, QObject *parent) : QObject (parent), list(src)
 {
 	QObject::connect(list, &TransList::postItemAppend, this, &TelnetAdapter::addItemSQL);
 	QObject::connect(list, &TransList::postItemRemove, this, &TelnetAdapter::removeItemSQL);
 	QObject::connect(list, &TransList::finishedRemoving, this, &TelnetAdapter::sendBuffor);
-	db = QSqlDatabase::addDatabase("QSQLITE");
-	db.setDatabaseName(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + R"(/dataBase)");
-	cout << QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + R"(/dataBase)";
+	db = dbSrc;
+	//db->setDatabaseName(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + R"(/dataBase)");
 	//writeQuerry(q);
-	if(db.open())
-		cout <<"Działa";
-	else
-		cout <<"Nie działa";
-
-	cout << "Generuje zapytanie";
+	db->open();
 	QSqlQuery q("SELECT MAX(orderID) FROM orders;");
-	cout << "Wykonuje zapytanie";
 	q.exec();
-	cout << "Zamykam połączenie z bazą";
-	db.close();
-	cout << "Rozpoczynam odczyt wyników. Wyników: "+q.size();
+	db->close();
 	q.next();
-
-
-	//cout << "Results: "+q.numRowsAffected();
 	maxID = q.value(0).toInt();
-	cout << this<< "Max ID: "+maxID;
-	//maxID++;
 	connectionEstablished = true;
-
 }
 
 void TelnetAdapter::newOrder(QString dishName, const quint8 souce, const bool meat, const bool salad, const bool fries, const bool cheese, const bool other, const bool takeaway) noexcept
@@ -148,48 +133,38 @@ QVariant TelnetAdapter::qmlGetTakeAway(QString src) const noexcept
 
 void TelnetAdapter::sync(QString address, quint16 port) noexcept
 {
-
-	cout << "Starting connection...";
 	socket = new QTcpSocket(nullptr);
 
 	socket->connectToHost(address, port);
 
 	socket->waitForConnected(3000);
 	socket->flush();
-	socket->write("hello server \r\n\r\n\r\n");
+	socket->write("conn\r\n\r\n\r\n");
 
 	socket->waitForBytesWritten();
 	socket->waitForReadyRead();
 
 	QByteArray x= socket->readAll();
 
-	cout << this<< " bytes read: "+x;
-	if(x == "ok\r\n")
-	{
-		cout << "Udało się ☭☭☭☭☭";
-	}else
-	{
-		cout << this<<"Nie udało się :(";
-		return;
-	}
+	if(!(x == "ok\r\n")) return;
 
 	size_t min,max,row;
 
-	db.open();
+	db->open();
 	QSqlQuery q1("SELECT MIN(orderID) FROM orders;");
 	QSqlQuery q2("SELECT MAX(orderID) FROM orders;");
-	db.close();
+	db->close();
 	q1.next();
 	q2.next();
 	min = q1.value(0).toInt();
 	max = q2.value(0).toInt();
 	row = min;
 
-	db.open();
+	db->open();
 	//q.clear();
 	QSqlQuery q("SELECT * FROM orders WHERE orderID="+QString::number(min)+";");
 	q.exec();
-	db.close();
+	db->close();
 
 	const quint8 orderID = static_cast<quint8>(q.record().indexOf("orderID"));
 	const quint8 dishName = static_cast<quint8>(q.record().indexOf("dishName"));
@@ -217,10 +192,10 @@ void TelnetAdapter::sync(QString address, quint16 port) noexcept
 		QString querrrry = "SELECT * FROM orders WHERE orderID=::0;";
 		querrrry.replace("::0", QString::number(row));
 		row++;
-		db.open();
+		db->open();
 		q.prepare(querrrry);
 		q.exec();
-		db.close();
+		db->close();
 		q.next();
 
 		if(q.value(0).isNull()) continue;
@@ -340,12 +315,12 @@ void TelnetAdapter::writeQuerry(QString src)
 	cout << "Sprawdzam połączenie";
 	if(!connectionEstablished) return;
 	cout << "Otwieram bazę";
-	db.open();
+	db->open();
 	QSqlQuery q(src);
 	cout << "Wysyłam zapytamnia: "+src;
 	q.exec();
 	cout << "Zamykam Bazę";
-	db.close();
+	db->close();
 	cout << "Last err.: "+q.lastError().text();
 }
 
@@ -354,7 +329,7 @@ void TelnetAdapter::connect()
 	if(connectionEstablished) return;
 
 
-	if(db.open())
+	if(db->open())
 	{
 		connectionEstablished = true;
 	}else connectionEstablished = false;
@@ -377,7 +352,7 @@ void TelnetAdapter::close()
 
 	if(isConnected())
 	{
-		db.close();
+		db->close();
 	}
 }
 
