@@ -48,7 +48,7 @@ public:
 
 	QTcpSocket* socket;
 
-	QSqlDatabase db;
+	QSqlDatabase* db;
 
 	bool connectionEstablished = false;
 
@@ -66,7 +66,7 @@ public:
 
 	static void setBooleans(QString& src, quint8& souce, bool& meat, bool& salad, bool& fries, bool& cheese, bool& other, bool& takeaway) noexcept;
 
-    explicit TelnetAdapter(TransList* src, QObject *parent = nullptr);
+	explicit TelnetAdapter(QSqlDatabase* dbSrc, TransList* src, QObject *parent = nullptr);
 
 	~TelnetAdapter() { close(); }
 

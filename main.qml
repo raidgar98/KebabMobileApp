@@ -3,6 +3,7 @@ import QtQuick.Window 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
+import Product 1.0
 
 Window
 {
@@ -148,6 +149,68 @@ Window
         }
     }
 
+
+    ListView
+    {
+        id: menuRect;
+        clip: true;
+        y: firstOne.x + firstOne.height + 10;
+        width: root.width;
+        height: root.height - y;
+        spacing: 10;
+
+        model: ProductModel
+        {
+            list: productList;
+        }
+
+        delegate: RowLayout
+        {
+            Button
+            {
+                text: model.First;
+                font.pixelSize: fontAltSize;
+                implicitWidth: (root.width*0.49)-10;/// menuRect.scaleX
+                height: root.buttAltHeight;
+                background: Rectangle
+                {
+                    radius: buttRadius
+                    border.color: buttBorderColor;
+                    border.width: buttBorderWidth;
+                    color: buttColor;
+                }
+
+                onClicked:
+                {
+                    popupOrder.oPEN(model.FirstShort);
+                }
+            }
+
+            Button
+            {
+                text: model.Second;
+                font.pixelSize: fontAltSize;
+                implicitWidth: (root.width *0.49)-10;/// menuRect.scaleX
+                height: root.buttAltHeight;
+                background: Rectangle
+                {
+                    radius: buttRadius
+                    border.color: buttBorderColor;
+                    border.width: buttBorderWidth;
+                    color: buttColor;
+                }
+
+                onClicked:
+                {
+                    popupOrder.oPEN(model.SecondShort);
+                    // popupOrder.close();
+                }
+            }
+        }
+    }
+
+//Old type of buttons
+/*
     ListView
     {
         id: menuRect;
@@ -327,6 +390,8 @@ Window
             }
         }
     }
+
+*/
 
 
     Popup
